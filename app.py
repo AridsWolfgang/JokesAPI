@@ -30,10 +30,10 @@ with app.app_context():
     # Create admin user if not exists
     if not User.query.filter_by(username='admin').first():
         admin = User(
-            username='admin',
-            email='admin@jokeapp.com',
-            password_hash=generate_password_hash('admin123'),
-            is_admin=True
+            username ='admin',
+            email ='admin@jokeapp.com',
+            password_hash = generate_password_hash('admin123'),
+            is_admin = True
         )
         db.session.add(admin)
         db.session.commit()
@@ -53,9 +53,9 @@ with app.app_context():
         if admin_user:
             for joke_data in default_jokes:
                 joke = Joke(
-                    joke_text=joke_data["text"],  # Fixed: was 'text' but model expects 'joke_text'
-                    category=joke_data["category"],
-                    user_id=admin_user.id
+                    joke_text = joke_data["text"],  # Fixed: was 'text' but model expects 'joke_text'
+                    category = joke_data["category"],
+                    user_id = admin_user.id
                 )
                 db.session.add(joke)
             db.session.commit()
@@ -79,9 +79,9 @@ def register():
         # Fixed: No need for complex password handling
         hashed_password = generate_password_hash(form.password.data)
         user = User(
-            username=form.username.data,
-            email=form.email.data,
-            password_hash=hashed_password
+            username = form.username.data,
+            email = form.email.data,
+            password_hash = hashed_password
         )
         db.session.add(user)
         db.session.commit()
@@ -128,9 +128,9 @@ def add_joke():
     form = JokeForm()
     if form.validate_on_submit():
         joke = Joke(
-            joke_text=form.joke_text.data,
-            category=form.category.data,
-            user_id=current_user.id
+            joke_text = form.joke_text.data,
+            category = form.category.data,
+            user_id = current_user.id
         )
         db.session.add(joke)
         db.session.commit()
