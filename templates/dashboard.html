@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="text-white">Welcome, {{ current_user.username }}! 👋</h2>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Your Jokes</h5>
+                <h2>{{ jokes|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Total Likes Received</h5>
+                <h2>{{ total_likes }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Member Since</h5>
+                <h6>{{ current_user.created_at.strftime('%B %Y') }}</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('add_joke') }}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Add New Joke
+                    </a>
+                    <a href="{{ url_for('my_jokes') }}" class="btn btn-outline-primary">
+                        <i class="bi bi-list-ul"></i> View My Jokes
+                    </a>
+                    <a href="{{ url_for('browse_jokes') }}" class="btn btn-outline-success">
+                        <i class="bi bi-search"></i> Browse All Jokes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Your Latest Jokes</h5>
+            </div>
+            <div class="card-body">
+                {% if jokes %}
+                    {% for joke in jokes[:3] %}
+                        <div class="mb-2 pb-2 border-bottom">
+                            <p class="mb-1">{{ joke.joke_text[:50] }}...</p>
+                            <small class="text-muted">
+                                <span class="category-badge">{{ joke.category }}</span>
+                                <i class="bi bi-heart-fill text-danger ms-2"></i> {{ joke.likes }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                    {% if jokes|length > 3 %}
+                        <a href="{{ url_for('my_jokes') }}">See all {{ jokes|length }} jokes →</a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-muted">You haven't added any jokes yet.</p>
+                    <a href="{{ url_for('add_joke') }}" class="btn btn-sm btn-primary">Add Your First Joke</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

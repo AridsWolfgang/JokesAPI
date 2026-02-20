@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Browse Jokes{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h2 class="text-white">Browse Jokes</h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Categories sidebar -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Categories</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <a href="{{ url_for('browse_jokes') }}" class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
+                        All Categories
+                    </a>
+                    {% for category, count in categories %}
+                        <a href="{{ url_for('browse_jokes', category=category) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {% if current_category == category %}active{% endif %}">
+                            {{ category|capitalize }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Jokes list -->
+    <div class="col-md-9">
+        {% if jokes.items %}
+            {% for joke in jokes.items %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <p class="card-text">{{ joke.joke_text }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="category-badge">{{ joke.category }}</span>
+                                <small class="text-muted ms-2">by {{ joke.author.username }}</small>
+                            </div>
+                            <div>
+                                <span class="me-3"><i class="bi bi-heart-fill text-danger"></i> {{ joke.likes }}</span>
+                                {% if current_user.is_authenticated %}
+                                    <form action="{{ url_for('like_joke', joke_id=joke.id) }}" method="POST" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-hand-thumbs-up"></i> Like
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if jokes.pages > 1 %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if jokes.has_prev %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('browse_jokes', page=jokes.prev_num, category=current_category) }}">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for page_num in jokes.iter_pages() %}
+                            {% if page_num %}
+                                <li class="page-item {% if page_num == jokes.page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('browse_jokes', page=page_num, category=current_category) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if jokes.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('browse_jokes', page=jokes.next_num, category=current_category) }}">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-emoji-frown display-1 text-muted"></i>
+                    <h3 class="mt-3">No jokes found</h3>
+                    {% if current_category %}
+                        <p class="text-muted">No jokes in the "{{ current_category }}" category yet.</p>
+                    {% else %}
+                        <p class="text-muted">Be the first to add a joke!</p>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('add_joke') }}" class="btn btn-primary">Add a Joke</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Add Jokes</a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
